@@ -4,6 +4,11 @@
 <dict>
 	<key> NSAppleScriptEnabled</key>
 	<false/>
+	<key>AranymHomeDirectories</key>
+	<array>
+		<string>Aranym_files</string>
+		<string>~/Documents/Aranym_files</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>

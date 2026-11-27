@@ -130,6 +130,9 @@ char gAranymFilesDirectory[MAXPATHLEN];	 // Path to the "AranymFiles" folder
 	NSDictionary *infoDict = [bundle infoDictionary];
 	
 	NSArray* searchPaths = [infoDict objectForKey: @"AranymHomeDirectories"];
+	if (![searchPaths isKindOfClass: [NSArray class]] || [searchPaths count] == 0)
+		//	 a bundle without the key, such as the one make builds: the defaults
+		searchPaths = [NSArray arrayWithObjects: @"Aranym_files", @"~/Documents/Aranym_files", nil];
 	
 	//	 helper to check existence
 	NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -305,6 +308,20 @@ int main (int argc, char **argv)
 		for (i = 0; i <= argc; i++)
 			gArgv[i] = argv[i];
 		gFinderLaunch = NO;
+	}
+
+	if ([[NSBundle mainBundle] objectForInfoDictionaryKey: @"NSMainNibFile"] == nil)
+	{
+		/* No bundle (the bare binary): no nib makes the delegate, so make it
+		 * here, and be a normal app with a Dock icon and keyboard focus. */
+		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+		NSApplication *app = [NSApplication sharedApplication];
+		if ([app respondsToSelector: @selector(setActivationPolicy:)])
+			[app setActivationPolicy: NSApplicationActivationPolicyRegular];
+		[app setDelegate: (id)[[SDLMain alloc] init]];
+		[pool release];
+		[app run];
+		return 0;
 	}
 
 	NSApplicationMain (argc, (const char **)argv);
